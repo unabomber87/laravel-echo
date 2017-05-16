@@ -6,17 +6,44 @@
  */
 
 require('./bootstrap');
+require('./notify');
 
-window.Vue = require('vue');
+import Echo from 'laravel-echo'
 
-/**
- * Next, we will create a fresh Vue application instance and attach it to
- * the page. Then, you may begin adding components to this application
- * or customize the JavaScript scaffolding to fit your unique needs.
- */
+let e = new Echo({
+	broadcaster: 'socket.io',
+	host: window.location.hostname + ':6001'
+})
 
-Vue.component('example', require('./components/Example.vue'));
+e.channel('chan-demo')
+ .listen('PostCreatedEvent', (e) => {
+ 	console.log('PostCreatedEvent', e);
+ })
 
-const app = new Vue({
-    el: '#app'
-});
+e.join('group.1')
+.here(function(users){
+	console.log('here', users)
+	
+})
+.joining(function(user){
+	$.notify({
+		message : user.id + 'viens de se connecter'
+	})
+	console.log('joining', user)
+})
+.leaving(function(user){
+	console.log('leaving', user)
+})
+ .listen('GrouWithEvent', (e) => {
+ 	console.log('GrouWithEvent', e);
+ })
+
+e.private('App.User.1')
+ .notification(function(notif){
+ 	console.log(notif)
+ })
+
+$(".demo").click(function(e){
+	e.preventDefault();
+	$.get('/post')
+})

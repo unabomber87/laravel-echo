@@ -11,6 +11,11 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', 'GroupController@index');
+Route::get('/spy/{id}', 'Auth\LoginController@spy')->name('spy');
+Route::get('/post', 'PostController@index');
+Route::get('/groups', 'GroupController@index');
+Route::post('/groups/{id}/notify', 'GroupController@notify')->name('notify');
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
